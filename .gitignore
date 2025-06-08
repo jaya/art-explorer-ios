@@ -1,0 +1,65 @@
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+
+# SwiftPM
+.swiftpm/
+.build/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage (caso use)
+Carthage/
+Cartfile.resolved
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# SPM binary artifacts
+Artifacts/
+
+# Xcode automatically generated files
+*.xcworkspace
+*.xcworkspacedata
+
+# User data
+*.DS_Store
+
+# Archives
+*.xcarchive
+
+# Firebase/GoogleService
+GoogleService-Info.plist
+
+# Output
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SwiftLint
+.swiftlint.yml
+
+# Xcode Previews cache
+.swiftUIPreview/
+
+# Other
+*.orig
