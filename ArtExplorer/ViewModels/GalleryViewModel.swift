@@ -7,25 +7,33 @@
 
 import Foundation
 
-enum ViewState {
-    case loading
-    case error
-    case normal
-}
-
 @MainActor
 final class GalleryViewModel: ObservableObject {
-    @Published var artworks: [ArtworkData] = []
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var viewState: ViewState = .loading
+    private var artworkCollection: ArtworkCollection?
+    private var artworks: [Artwork] = []
 
     func loadArtworks() async {
-        isLoading = true
         do {
-            artworks = try await ArtAPIService.shared.fetchArtworks()
+            artworkCollection = try await ArtAPIService.shared.fetchArtworks()
         } catch {
-            errorMessage = "Error loading artworks: \(error)"
+            let errorMessage = "Error loading artworks: \(error)"
+            viewState = .error(errorMessage)
         }
-        isLoading = false
+    }
+
+    func loadArtworksDetails() async {
+        do {
+            for i in artworks.count...artworks.count+15 {
+                if let objectID = artworkCollection?.objectIDs?[i] {
+                    let artwork = try await ArtAPIService.shared.fetchArtworksDetails(objectID: "\(objectID)")
+                    artworks.append(artwork)
+                }
+            }
+            viewState = .normal(artworks)
+        } catch {
+            let errorMessage = "Error loading artworks: \(error)"
+            viewState = .error(errorMessage)
+        }
     }
 }

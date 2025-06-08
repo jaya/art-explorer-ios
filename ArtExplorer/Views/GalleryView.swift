@@ -12,23 +12,39 @@ struct GalleryView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
-                ProgressView("Loading...")
-            } else if let error = viewModel.errorMessage {
-                Text(error)
-            } else {
-                ScrollView {
-                    ForEach(viewModel.artworks) { artwork in
-                        Text(artwork.title)
-                            .font(.headline)
-                    }
-                }
+            switch viewModel.viewState {
+            case .loading:
+                ProgressView()
+            case .error(let error):
+                Text(error ?? "Error")
+            case .normal(let artworks):
+                setArtworks(artworks)
             }
         }
         .task {
             await viewModel.loadArtworks()
+            await viewModel.loadArtworksDetails()
         }
     }
+
+    func setArtworks(_ artworks: [Artwork]) -> some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(artworks.indices, id: \.self) { index in
+                    let artwork = artworks[index]
+                    Text("\(artwork)")
+                        .onAppear {
+                            if index == artworks.count - 1 {
+                                Task {
+                                    await viewModel.loadArtworksDetails()
+                                }
+                            }
+                        }
+                }
+            }
+        }
+    }
+
 }
 
 #Preview {
