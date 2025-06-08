@@ -10,14 +10,16 @@ import SwiftData
 import Kingfisher
 
 struct ArtworkDetailView: View {
-    var artwork: Artwork
+    @StateObject private var viewModel: ArtworkDetailViewModel
 
-    @Environment(\.modelContext) private var context
+    init(artwork: Artwork, context: ModelContext) {
+        _viewModel = StateObject(wrappedValue: ArtworkDetailViewModel(artwork: artwork, context: context))
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                KFImage(URL(string: artwork.primaryImage))
+                KFImage(URL(string: viewModel.artwork.primaryImage))
                     .placeholder {
                         ZStack {
                             Rectangle()
@@ -32,16 +34,16 @@ struct ArtworkDetailView: View {
                     .cornerRadius(12)
 
                 HStack {
-                    Text(artwork.title)
+                    Text(viewModel.artwork.title)
                         .font(.title)
                         .bold()
 
                     Spacer()
 
-                    Button(action: toggleFavorite) {
-//                        Image(systemName: artwork.isFavorite ? "heart.fill" : "heart")
-//                            .foregroundColor(artwork.isFavorite ? .red : .gray)
-                        Image(systemName:"heart.fill")
+                    Button(action: viewModel.toggleFavorite) {
+//                        Image(systemName: viewModel.artwork.isFavorite ? "heart.fill" : "heart")
+//                            .foregroundColor(viewModel.artwork.isFavorite ? .red : .gray)
+                        Image(systemName: "heart.fill")
                             .foregroundColor(.red)
                             .imageScale(.large)
                             .padding(8)
@@ -50,19 +52,19 @@ struct ArtworkDetailView: View {
                     }
                 }
 
-                Text("Artist: \(artwork.artistDisplayName)")
+                Text("Artist: \(viewModel.artwork.artistDisplayName)")
                     .font(.subheadline)
 
-                Text("Date: \(artwork.objectDate)")
+                Text("Date: \(viewModel.artwork.objectDate)")
                     .font(.subheadline)
 
-                if !artwork.medium.isEmpty {
-                    Text("Medium: \(artwork.medium)")
+                if !viewModel.artwork.medium.isEmpty {
+                    Text("Medium: \(viewModel.artwork.medium)")
                         .font(.body)
                 }
 
-                if !artwork.creditLine.isEmpty {
-                    Text("Credit: \(artwork.creditLine)")
+                if !viewModel.artwork.creditLine.isEmpty {
+                    Text("Credit: \(viewModel.artwork.creditLine)")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
@@ -71,23 +73,5 @@ struct ArtworkDetailView: View {
         }
         .navigationTitle("Artwork")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func toggleFavorite() {
-//        artwork.isFavorite.toggle()
-//
-//        if artwork.isFavorite {
-//            context.insert(artwork)
-//        } else {
-//            context.delete(artwork)
-//        }
-
-        context.insert(artwork.toArtworkModel())
-
-        do {
-            try? context.save()
-        } catch {
-            print("Error on saving \(error)")
-        }
     }
 }
