@@ -10,10 +10,9 @@ import SwiftData
 import Kingfisher
 
 struct ArtworkDetailView: View {
-    @Bindable var artwork: ArtworkModel
+    var artwork: Artwork
 
     @Environment(\.modelContext) private var context
-    @Query private var savedFavorites: [ArtworkModel]
 
     var body: some View {
         ScrollView {
@@ -40,8 +39,10 @@ struct ArtworkDetailView: View {
                     Spacer()
 
                     Button(action: toggleFavorite) {
-                        Image(systemName: artwork.isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(artwork.isFavorite ? .red : .gray)
+//                        Image(systemName: artwork.isFavorite ? "heart.fill" : "heart")
+//                            .foregroundColor(artwork.isFavorite ? .red : .gray)
+                        Image(systemName:"heart.fill")
+                            .foregroundColor(.red)
                             .imageScale(.large)
                             .padding(8)
                             .background(Color(.systemGray6))
@@ -73,16 +74,18 @@ struct ArtworkDetailView: View {
     }
 
     private func toggleFavorite() {
-        artwork.isFavorite.toggle()
+//        artwork.isFavorite.toggle()
+//
+//        if artwork.isFavorite {
+//            context.insert(artwork)
+//        } else {
+//            context.delete(artwork)
+//        }
 
-        if artwork.isFavorite {
-            context.insert(artwork)
-        } else {
-            context.delete(artwork)
-        }
+        context.insert(artwork.toArtworkModel())
 
         do {
-            try context.save()
+            try? context.save()
         } catch {
             print("Error on saving \(error)")
         }

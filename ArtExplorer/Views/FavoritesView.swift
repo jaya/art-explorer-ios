@@ -18,8 +18,8 @@ struct FavoritesView: View {
             ScrollView {
                 LazyVStack(spacing: 16) {
                     ForEach(favorites) { artwork in
-                        NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
-                            ArtworkView(artwork: artwork)
+                        NavigationLink(destination: ArtworkDetailView(artwork: artwork.toArtwork())) {
+                            ArtworkView(artwork: artwork.toArtwork())
                         }
                         .buttonStyle(PlainButtonStyle())
                     }

@@ -10,8 +10,8 @@ import SwiftData
 
 @Model
 class ArtworkModel {
-//    @Attribute(.unique) var objectID: String
-    var objectID: String
+    @Attribute(.unique)
+    var id: Int
     var title: String
     var artistDisplayName: String
     var objectDate: String
@@ -19,20 +19,18 @@ class ArtworkModel {
     var creditLine: String
     var primaryImage: String
     var primaryImageSmall: String
-    var isFavorite: Bool
 
     init(
-        objectID: String,
+        id: Int,
         title: String,
         artistDisplayName: String,
         objectDate: String,
         medium: String,
         creditLine: String,
         primaryImage: String,
-        primaryImageSmall: String,
-        isFavorite: Bool = false
+        primaryImageSmall: String
     ) {
-        self.objectID = objectID
+        self.id = id
         self.title = title
         self.artistDisplayName = artistDisplayName
         self.objectDate = objectDate
@@ -40,6 +38,57 @@ class ArtworkModel {
         self.creditLine = creditLine
         self.primaryImage = primaryImage
         self.primaryImageSmall = primaryImageSmall
-        self.isFavorite = isFavorite
+    }
+}
+
+extension ArtworkModel {
+    func toArtwork() -> Artwork {
+        return Artwork(
+            objectID: id,
+            isHighlight: false,
+            accessionNumber: "",
+            accessionYear: "",
+            isPublicDomain: false,
+            primaryImage: primaryImage,
+            primaryImageSmall: primaryImageSmall,
+            additionalImages: [],
+            constituents: nil,
+            department: "",
+            objectName: "",
+            title: title,
+            culture: "",
+            period: "",
+            dynasty: "",
+            reign: "",
+            portfolio: "",
+            artistRole: "",
+            artistPrefix: "",
+            artistDisplayName: artistDisplayName,
+            artistDisplayBio: "",
+            artistSuffix: "",
+            artistAlphaSort: "",
+            artistNationality: "",
+            artistBeginDate: "",
+            artistEndDate: "",
+            artistGender: "",
+            artistWikidataURL: nil,
+            artistULANURL: nil,
+            objectDate: objectDate,
+            objectBeginDate: 0,
+            objectEndDate: 0,
+            medium: medium,
+            dimensions: "",
+            measurements: nil,
+            creditLine: creditLine,
+            classification: "",
+            rightsAndReproduction: "",
+            linkResource: nil,
+            metadataDate: "",
+            repository: "",
+            objectURL: "",
+            objectWikidataURL: nil,
+            isTimelineWork: false,
+            galleryNumber: nil
+        )
     }
 }

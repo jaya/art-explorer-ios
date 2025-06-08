@@ -84,7 +84,7 @@ struct Artwork: Codable, Identifiable {
 extension Artwork {
     func toArtworkModel() -> ArtworkModel {
         ArtworkModel(
-            objectID: String(objectID),
+            id: id,
             title: title,
             artistDisplayName: artistDisplayName,
             objectDate: objectDate,
