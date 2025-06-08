@@ -44,8 +44,8 @@ struct GalleryView: View {
     func setArtwork(_ artworks: [Artwork], index: Int) -> some View {
         let artwork = artworks[index]
 
-        NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
-            ArtworkView(artwork: artwork)
+        NavigationLink(destination: ArtworkDetailView(artwork: artwork.toArtworkModel())) {
+            ArtworkView(artwork: artwork.toArtworkModel())
         }
         .buttonStyle(PlainButtonStyle())
         .onAppear {

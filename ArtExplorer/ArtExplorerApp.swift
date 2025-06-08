@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct ArtExplorerApp: App {
@@ -13,5 +14,6 @@ struct ArtExplorerApp: App {
         WindowGroup {
             HomeView()
         }
+        .modelContainer(for: ArtworkModel.self)
     }
 }

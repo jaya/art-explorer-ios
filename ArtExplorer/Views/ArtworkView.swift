@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct ArtworkView: View {
-    let artwork: Artwork
+    let artwork: ArtworkModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {

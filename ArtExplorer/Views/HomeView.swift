@@ -15,7 +15,7 @@ struct HomeView: View {
                     Label("Gallery", systemImage: "photo.on.rectangle")
                 }
 
-            Text("Favorites")
+            FavoritesView()
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }

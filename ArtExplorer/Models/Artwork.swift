@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 struct Artwork: Codable, Identifiable {
     var id: Int { objectID }
 
@@ -80,5 +78,20 @@ struct Artwork: Codable, Identifiable {
         case objectDate, objectBeginDate, objectEndDate, medium, dimensions, measurements, creditLine, classification, rightsAndReproduction, linkResource, metadataDate, repository, objectURL
         case objectWikidataURL = "objectWikidata_URL"
         case isTimelineWork, galleryNumber = "GalleryNumber"
+    }
+}
+
+extension Artwork {
+    func toArtworkModel() -> ArtworkModel {
+        ArtworkModel(
+            objectID: String(objectID),
+            title: title,
+            artistDisplayName: artistDisplayName,
+            objectDate: objectDate,
+            medium: medium,
+            creditLine: creditLine,
+            primaryImage: primaryImage,
+            primaryImageSmall: primaryImageSmall
+        )
     }
 }

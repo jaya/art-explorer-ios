@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 import Kingfisher
 
 struct ArtworkDetailView: View {
-    let artwork: Artwork
-    @State private var isFavorite: Bool = false
+    @Bindable var artwork: ArtworkModel
+
+    @Environment(\.modelContext) private var context
+    @Query private var savedFavorites: [ArtworkModel]
 
     var body: some View {
         ScrollView {
@@ -33,19 +36,17 @@ struct ArtworkDetailView: View {
                     Text(artwork.title)
                         .font(.title)
                         .bold()
+
                     Spacer()
-                    Button(action: {
-                        isFavorite.toggle()
-                        // You can call a persist function here later
-                    }) {
-                        Image(systemName: isFavorite ? "heart.fill" : "heart")
-                            .foregroundColor(isFavorite ? .red : .gray)
+
+                    Button(action: toggleFavorite) {
+                        Image(systemName: artwork.isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(artwork.isFavorite ? .red : .gray)
                             .imageScale(.large)
                             .padding(8)
                             .background(Color(.systemGray6))
                             .clipShape(Circle())
                     }
-                    .accessibilityLabel(isFavorite ? "Unfavorite" : "Favorite")
                 }
 
                 Text("Artist: \(artwork.artistDisplayName)")
@@ -70,5 +71,20 @@ struct ArtworkDetailView: View {
         .navigationTitle("Artwork")
         .navigationBarTitleDisplayMode(.inline)
     }
-}
 
+    private func toggleFavorite() {
+        artwork.isFavorite.toggle()
+
+        if artwork.isFavorite {
+            context.insert(artwork)
+        } else {
+            context.delete(artwork)
+        }
+
+        do {
+            try context.save()
+        } catch {
+            print("Error on saving \(error)")
+        }
+    }
+}
