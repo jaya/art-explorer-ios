@@ -5,8 +5,8 @@
 //  Created by Rafael Almeida on 08/06/25.
 //
 
-enum ViewState {
+enum ViewState<V> {
     case loading
     case error(String?)
-    case normal([Artwork])
+    case normal(V)
 }

@@ -9,7 +9,7 @@ import Foundation
 
 @MainActor
 final class GalleryViewModel: ObservableObject {
-    @Published var viewState: ViewState = .loading
+    @Published var viewState: ViewState<[Artwork]> = .loading
     private var artworkCollection: ArtworkCollection?
     private var artworks: [Artwork] = []
 

@@ -30,21 +30,25 @@ struct GalleryView: View {
     func setArtworks(_ artworks: [Artwork]) -> some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(artworks.indices, id: \.self) { index in
-                    let artwork = artworks[index]
-                    Text("\(artwork)")
-                        .onAppear {
-                            if index == artworks.count - 1 {
-                                Task {
-                                    await viewModel.loadArtworksDetails()
-                                }
-                            }
-                        }
+                ForEach(Array(artworks.indices), id: \.self) { index in
+                    setArtwork(artworks, index: index)
                 }
             }
         }
     }
 
+    @ViewBuilder
+    func setArtwork(_ artworks: [Artwork], index: Int) -> some View {
+        let artwork = artworks[index]
+        ArtworkView(imageURL: URL(string: artwork.primaryImageSmall))
+            .onAppear {
+                if index == artworks.count - 5 {
+                    Task {
+                        await viewModel.loadArtworksDetails()
+                    }
+                }
+            }
+    }
 }
 
 #Preview {
