@@ -10,6 +10,7 @@ import Kingfisher
 
 struct ArtworkDetailView: View {
     let artwork: Artwork
+    @State private var isFavorite: Bool = false
 
     var body: some View {
         ScrollView {
@@ -28,9 +29,24 @@ struct ArtworkDetailView: View {
                     .scaledToFit()
                     .cornerRadius(12)
 
-                Text(artwork.title)
-                    .font(.title)
-                    .bold()
+                HStack {
+                    Text(artwork.title)
+                        .font(.title)
+                        .bold()
+                    Spacer()
+                    Button(action: {
+                        isFavorite.toggle()
+                        // You can call a persist function here later
+                    }) {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(isFavorite ? .red : .gray)
+                            .imageScale(.large)
+                            .padding(8)
+                            .background(Color(.systemGray6))
+                            .clipShape(Circle())
+                    }
+                    .accessibilityLabel(isFavorite ? "Unfavorite" : "Favorite")
+                }
 
                 Text("Artist: \(artwork.artistDisplayName)")
                     .font(.subheadline)
@@ -55,3 +71,4 @@ struct ArtworkDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
