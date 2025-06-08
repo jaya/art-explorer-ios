@@ -11,19 +11,21 @@ struct GalleryView: View {
     @StateObject var viewModel = GalleryViewModel()
 
     var body: some View {
-        Group {
-            switch viewModel.viewState {
-            case .loading:
-                ProgressView()
-            case .error(let error):
-                Text(error ?? "Error")
-            case .normal(let artworks):
-                setArtworks(artworks)
+        NavigationStack {
+            Group {
+                switch viewModel.viewState {
+                case .loading:
+                    ProgressView()
+                case .error(let error):
+                    Text(error ?? "Error")
+                case .normal(let artworks):
+                    setArtworks(artworks)
+                }
             }
-        }
-        .task {
-            await viewModel.loadArtworks()
-            await viewModel.loadArtworksDetails()
+            .task {
+                await viewModel.loadArtworks()
+                await viewModel.loadArtworksDetails()
+            }
         }
     }
 
@@ -41,15 +43,20 @@ struct GalleryView: View {
     @ViewBuilder
     func setArtwork(_ artworks: [Artwork], index: Int) -> some View {
         let artwork = artworks[index]
-        ArtworkView(artwork: artwork)
-            .onAppear {
-                if index == artworks.count - 1 {
-                    Task {
-                        await viewModel.loadArtworksDetails()
-                    }
+
+        NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
+            ArtworkView(artwork: artwork)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .onAppear {
+            if index == artworks.count - 5 {
+                Task {
+                    await viewModel.loadArtworksDetails()
                 }
             }
+        }
     }
+
 }
 
 #Preview {
