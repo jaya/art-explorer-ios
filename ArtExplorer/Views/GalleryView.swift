@@ -35,14 +35,15 @@ struct GalleryView: View {
                 }
             }
         }
+        .background(Color(.systemGroupedBackground))
     }
 
     @ViewBuilder
     func setArtwork(_ artworks: [Artwork], index: Int) -> some View {
         let artwork = artworks[index]
-        ArtworkView(imageURL: URL(string: artwork.primaryImageSmall))
+        ArtworkView(artwork: artwork)
             .onAppear {
-                if index == artworks.count - 5 {
+                if index == artworks.count - 1 {
                     Task {
                         await viewModel.loadArtworksDetails()
                     }
