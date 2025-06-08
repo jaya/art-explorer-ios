@@ -11,7 +11,7 @@ import SwiftUI
 struct ArtExplorerApp: App {
     var body: some Scene {
         WindowGroup {
-            GalleryView()
+            HomeView()
         }
     }
 }
