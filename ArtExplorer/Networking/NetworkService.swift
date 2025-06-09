@@ -29,6 +29,10 @@ final class NetworkService {
             throw NetworkError.serverError(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode(T.self, from: data)
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw NetworkError.decodingError
+        }
     }
 }
