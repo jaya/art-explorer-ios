@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GalleryView: View {
+    @Environment(\.modelContext) private var context
     @StateObject var viewModel = GalleryViewModel()
 
     var body: some View {
@@ -41,7 +42,7 @@ struct GalleryView: View {
 
     @ViewBuilder
     func setArtwork(_ artwork: Artwork, artworks: [Artwork],  index: Int) -> some View {
-        NavigationLink(destination: ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork))) {
+        NavigationLink(destination: ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork, context: context))) {
             ArtworkView(artwork: artwork)
         }
         .buttonStyle(PlainButtonStyle())

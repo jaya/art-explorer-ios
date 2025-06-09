@@ -36,9 +36,9 @@ struct ArtworkDetailView: View {
 
                     Spacer()
 
-                    Button(action: viewModel.toggleFavorite) {
-//                        Image(systemName: viewModel.artwork.isFavorite ? "heart.fill" : "heart")
-//                            .foregroundColor(viewModel.artwork.isFavorite ? .red : .gray)
+                    Button(action: {
+                        viewModel.toggleFavorite()
+                    }) {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
                             .imageScale(.large)
