@@ -24,7 +24,6 @@ struct GalleryView: View {
             }
             .task {
                 await viewModel.loadArtworks()
-                await viewModel.loadArtworksDetails()
             }
         }
     }

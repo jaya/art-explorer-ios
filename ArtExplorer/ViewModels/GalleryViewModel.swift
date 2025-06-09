@@ -14,8 +14,13 @@ final class GalleryViewModel: ObservableObject {
     private var artworkCollection: ArtworkCollection?
     private var artworks: [Artwork] = []
     private let batchSize = 15
+    private var didLoad = false
 
     func loadArtworks() async {
+        guard !didLoad else { return }
+
+        defer { didLoad = true }
+
         do {
             artworkCollection = try await NetworkService.shared.request(
                 endpoint: MetMuseumAPI.searchArtworks(query: "painting"),
