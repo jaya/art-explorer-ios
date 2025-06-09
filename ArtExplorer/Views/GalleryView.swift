@@ -32,8 +32,8 @@ struct GalleryView: View {
     func setArtworks(_ artworks: [Artwork]) -> some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(Array(artworks.indices), id: \.self) { index in
-                    setArtwork(artworks, index: index)
+                ForEach(Array(artworks.enumerated()), id: \.offset) { index, artwork in
+                    setArtwork(artwork, artworks: artworks, index: index)
                 }
             }
         }
@@ -41,10 +41,8 @@ struct GalleryView: View {
     }
 
     @ViewBuilder
-    func setArtwork(_ artworks: [Artwork], index: Int) -> some View {
-        let artwork = artworks[index]
-
-        NavigationLink(destination: ArtworkDetailView(artwork: artwork)) {
+    func setArtwork(_ artwork: Artwork, artworks: [Artwork],  index: Int) -> some View {
+        NavigationLink(destination: ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork))) {
             ArtworkView(artwork: artwork)
         }
         .buttonStyle(PlainButtonStyle())
@@ -56,7 +54,6 @@ struct GalleryView: View {
             }
         }
     }
-
 }
 
 #Preview {

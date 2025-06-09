@@ -10,11 +10,7 @@ import SwiftData
 import Kingfisher
 
 struct ArtworkDetailView: View {
-    @StateObject private var viewModel: ArtworkDetailViewModel
-
-    init(artwork: Artwork, context: ModelContext) {
-        _viewModel = StateObject(wrappedValue: ArtworkDetailViewModel(artwork: artwork, context: context))
-    }
+    @StateObject var viewModel: ArtworkDetailViewModel
 
     var body: some View {
         ScrollView {
