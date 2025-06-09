@@ -15,7 +15,7 @@ struct ArtworkDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                KFImage(URL(string: viewModel.artwork.primaryImage))
+                KFImage(URL(string: viewModel.artwork.primaryImageSmall))
                     .placeholder {
                         ZStack {
                             Rectangle()
