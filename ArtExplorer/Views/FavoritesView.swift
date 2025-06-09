@@ -15,18 +15,33 @@ struct FavoritesView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(favorites) { artwork in
-                        NavigationLink(destination: ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork.toArtwork(), context: context))) {
-                            ArtworkView(artwork: artwork.toArtwork())
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                .padding(.top)
-            }
-            .navigationTitle("Favorites")
+            favoritesList
+                .navigationTitle("Favorites")
         }
+    }
+
+    private var favoritesList: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(favorites) { artwork in
+                    favoriteItem(for: artwork)
+                }
+            }
+            .padding(.top)
+        }
+    }
+
+    private func favoriteItem(for artwork: ArtworkModel) -> some View {
+        NavigationLink(
+            destination: ArtworkDetailView(
+                viewModel: ArtworkDetailViewModel(
+                    artwork: artwork.toArtwork(),
+                    context: context
+                )
+            )
+        ) {
+            ArtworkView(artwork: artwork.toArtwork())
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

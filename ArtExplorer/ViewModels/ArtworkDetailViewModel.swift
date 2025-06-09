@@ -8,17 +8,20 @@
 import Foundation
 import SwiftData
 
-import Foundation
-import SwiftData
-
 @MainActor
 class ArtworkDetailViewModel: ObservableObject {
     @Published var artwork: Artwork
+    @Published private(set) var isFavorite: Bool = false
+
     private let context: ModelContext
 
     init(artwork: Artwork, context: ModelContext) {
         self.artwork = artwork
         self.context = context
+
+        Task {
+            await checkIfFavorited()
+        }
     }
 
     func toggleFavorite() {
@@ -32,9 +35,11 @@ class ArtworkDetailViewModel: ObservableObject {
 
                 if let model = existing {
                     context.delete(model)
+                    isFavorite = false
                 } else {
                     let model = artwork.toArtworkModel()
                     context.insert(model)
+                    isFavorite = true
                 }
 
                 try context.save()
@@ -44,14 +49,16 @@ class ArtworkDetailViewModel: ObservableObject {
         }
     }
 
-    func isFavorited() async -> Bool {
+    func checkIfFavorited() async {
         do {
             let descriptor = FetchDescriptor<ArtworkModel>(
                 predicate: #Predicate { $0.id == artwork.id }
             )
-            return try context.fetchCount(descriptor) > 0
+            let count = try context.fetchCount(descriptor)
+            isFavorite = count > 0
         } catch {
-            return false
+            isFavorite = false
         }
     }
 }
+
