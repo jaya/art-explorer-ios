@@ -33,10 +33,9 @@ Permite listar obras com imagens, ver detalhes, e favoritar obras.
 
 ### Endpoints utilizados
 
-Buscar obras com imagem:
+* Buscar obras com imagem:
 GET `/public/collection/v1/search?hasImages=true&q=painting`
-
-Buscar detalhes da obra:
+* Buscar detalhes da obra:
 GET `/public/collection/v1/objects/{objectID}`
 
 ### Licença
