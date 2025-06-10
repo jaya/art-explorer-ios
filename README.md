@@ -13,23 +13,23 @@ Permite listar obras com imagens, ver detalhes, e favoritar obras.
 
 ### Funcionalidades implementadas
 
-Listagem de obras com imagens (15 por página)
-Visualização de detalhes (título, artista, data, técnica, imagem, créditos)
-Marcar e desmarcar favoritos com persistência local
-Interface simples e responsiva em SwiftUI
+* Listagem de obras com imagens (15 por página)
+* Visualização de detalhes (título, artista, data, técnica, imagem, créditos)
+* Marcar e desmarcar favoritos com persistência local
+* Interface simples e responsiva em SwiftUI
 
 ### Como rodar o projeto
 
-Abra o projeto no Xcode 16.4 (ou superior)
-Rode no simulador ou dispositivo iOS 18.5+
-O app já busca as obras via API pública do The Met
+* Abra o projeto no Xcode 16.4 (ou superior)
+* Rode no simulador ou dispositivo iOS 18.5+
+* O app já busca as obras via API pública do The Met
 
 ### Decisões arquiteturais
 
-Arquitetura MVVM usando SwiftUI
-Uso de @StateObject para gerenciamento de estado
-Persistência local com SwiftData
-Uso de KFImage para carregamento assíncrono e cache de imagens
+* Arquitetura MVVM usando SwiftUI
+* Uso de @StateObject para gerenciamento de estado
+* Persistência local com SwiftData
+* Uso de KFImage para carregamento assíncrono e cache de imagens
 
 ### Endpoints utilizados
 
