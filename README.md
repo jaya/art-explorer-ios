@@ -1,154 +1,49 @@
-# Art Explorer - Desafio iOS com The Met Museum API
+# Art Explorer iOS
 
-## 🌟 Objetivo
+## Desafio iOS com The Met Museum API
 
-Desenvolver um aplicativo iOS em **Swift** para explorar obras de arte do acervo do Metropolitan Museum of Art (The Met), integrando-se com sua API aberta para:
+### Sobre
 
-* Listar obras com imagens
-* Visualizar detalhes
-* Marcar como favoritas
+Aplicativo iOS em Swift para explorar obras de arte do Metropolitan Museum of Art (The Met), utilizando sua API aberta.
+Permite listar obras com imagens, ver detalhes, e favoritar obras.
 
----
+### Imagens
+![Simulator Screenshot - iPhone 16 - 2025-06-09 at 21 34 35](https://github.com/user-attachments/assets/78a74dbd-1a1a-4455-8a89-725085817614)
+![Simulator Screenshot - iPhone 16 - 2025-06-09 at 21 34 39](https://github.com/user-attachments/assets/abdbc14d-9e22-4772-ac68-ad0c15ac7c50)
 
-## 🔍 Funcionalidades Principais
+### Funcionalidades implementadas
 
-1. **Listar Obras de Arte com Imagem**
+Listagem de obras com imagens (15 por página)
+Visualização de detalhes (título, artista, data, técnica, imagem, créditos)
+Marcar e desmarcar favoritos com persistência local
+Interface simples e responsiva em SwiftUI
 
-   * Exibir 15 obras por vez com imagens
-   * Paginação simulada ao rolar até o final da lista
+### Como rodar o projeto
 
-2. **Favoritar Obras**
+Abra o projeto no Xcode 16.4 (ou superior)
+Rode no simulador ou dispositivo iOS 18.5+
+O app já busca as obras via API pública do The Met
 
-   * Marcar e desmarcar obras como favoritas
-   * Exibir favoritos em uma seção separada
-   * Persistência local (CoreData ou UserDefaults)
+### Decisões arquiteturais
 
-3. **Detalhes da Obra**
+Arquitetura MVVM usando SwiftUI
+Uso de @StateObject para gerenciamento de estado
+Persistência local com SwiftData
+Uso de KFImage para carregamento assíncrono e cache de imagens
 
-   * Exibir: título, artista, data, técnica, departamento e imagem
+### Endpoints utilizados
 
-4. **Interface Amigável**
+Buscar obras com imagem:
+GET `/public/collection/v1/search?hasImages=true&q=painting`
 
-   * Design responsivo
-   * Scroll suave e UX clara
+Buscar detalhes da obra:
+GET `/public/collection/v1/objects/{objectID}`
 
-5. **Testes Incluídos**
-
-   * Testes unitários (ViewModel, Services)
-   * Testes de interface com XCTest ou XCUITest
-
----
-
-## 📄 Requisitos do Projeto
-
-### 1. Integração com API
-
-* Buscar obras usando: `GET /public/collection/v1/search?hasImages=true&q=painting`
-* Buscar detalhes: `GET /public/collection/v1/objects/{objectID}`
-* Paginação simulada via slicing da lista de `objectIDs`
-
-### 2. Paginação
-
-* Carregamento incremental de 15 em 15 objetos
-* Busca paralela dos detalhes com identificadores retornados
-
-### 3. Favoritos
-
-* Armazenar localmente os objetos favoritados
-* Permitir desmarcar favoritos e navegar para detalhes
-
-### 4. UI/UX
-
-* Scroll infinito (UICollectionView ou SwiftUI List)
-* Indicadores de carregamento e mensagens de erro visuais
-* Suporte a dark mode é um diferencial
-
-### 5. Testes
-
-* ViewModel com mock de serviços
-* Testes de tela para favoritar e navegar
-
-### 6. Documentação
-
-* README contendo:
-
-  * Como rodar o projeto (Xcode, CocoaPods/SPM)
-  * Decisões arquiteturais (MVC, MVVM ou Clean)
-  * Endpoints utilizados
-  * Prints ou vídeos são bem-vindos
-
----
-
-## 🔗 Endpoints Utilizados da API The Met
-
-| Funcionalidade             | Endpoint                                                           |
-| -------------------------- | ------------------------------------------------------------------ |
-| Listar obras com imagem    | `GET /public/collection/v1/search?hasImages=true&q=painting`       |
-| Buscar detalhes da obra    | `GET /public/collection/v1/objects/{objectID}`                     |
-| Listar departamentos       | `GET /public/collection/v1/departments`                            |
-| Buscar por departamento    | `GET /public/collection/v1/search?departmentId=11&q=portrait`      |
-| Buscar por artista/cultura | `GET /public/collection/v1/search?artistOrCulture=true&q=van+gogh` |
-
----
-
-## ⌚ Diagrama de Sequência (Mermaid)
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant UI
-    participant ViewModel
-    participant Repository
-    participant TheMetAPI
-
-    User->>UI: Scroll até o fim da lista
-    UI->>ViewModel: solicitar próxima página de obras
-    ViewModel->>Repository: buscar próximos objectIDs
-    Repository->>TheMetAPI: GET /search?hasImages=true&q=painting
-    TheMetAPI-->>Repository: Retorna lista de objectIDs
-    loop Para cada objectID (15 por página)
-        Repository->>TheMetAPI: GET /objects/{objectID}
-        TheMetAPI-->>Repository: Dados da obra
-    end
-    Repository-->>ViewModel: Lista de obras detalhadas
-    ViewModel-->>UI: Atualiza lista com novas obras
-    User->>UI: Clica em "favoritar"
-    UI->>ViewModel: salvar obra favorita
-    ViewModel->>CoreData: inserir ou remover favorito
-```
-
----
-
-## 📊 Requisitos Desejáveis
-
-* Logging com `os_log` ou ferramenta equivalente
-* Busca com debounce
-* Filtros por artista, data, cultura
-* Animações com UIKit Dynamics ou SwiftUI
-* Modularização do projeto
-* Deploy com TestFlight ou Demo em vídeo
-
----
-
-## 📆 Entrega
-
-1. **Fork do Repositório Base**
-2. **Crie uma branch com seu nome em snake\_case** (ex: `joao_silva_souza`)
-3. **Suba o projeto com commits organizados**
-4. **Abra um Pull Request** com:
-
-   * Título: `Entrega - joao_silva_souza`
-   * Corpo: Nome completo, data da entrega, considerações opcionais
-
----
-
-## 🎓 Licença
+### Licença
 
 Os dados são fornecidos pela **The Met Museum Open Access API** sob licença [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
 
----
+### Contato
 
-## 📢 Contato
-
-* Autor: Leandro Costa
-* Email: [leandro@jaya.tech](mailto:leandro@jaya.tech)
+* Autor: Rafael Almeida
+* Email: [apprafael.almeida@gmail.com](mailto:apprafael.almeida@gmail.com)
