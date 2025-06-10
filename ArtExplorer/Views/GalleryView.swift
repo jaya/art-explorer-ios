@@ -23,8 +23,10 @@ struct GalleryView: View {
                     setArtworks(artworks)
                 }
             }
-            .task {
-                await viewModel.loadArtworks()
+            .onAppear {
+                Task {
+                    await viewModel.loadArtworks()
+                }
             }
         }
     }
@@ -37,7 +39,6 @@ struct GalleryView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
     }
 
     @ViewBuilder

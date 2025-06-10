@@ -24,35 +24,37 @@ class ArtworkDetailViewModel: ObservableObject {
         }
     }
 
-    func toggleFavorite() {
-        Task {
-            do {
-                let descriptor = FetchDescriptor<ArtworkModel>(
-                    predicate: #Predicate { $0.id == artwork.id }
-                )
+    func toggleFavorite() async {
+        let artworkId = artwork.id
 
-                let existing = try context.fetch(descriptor).first
+        do {
+            let descriptor = FetchDescriptor<ArtworkModel>(
+                predicate: #Predicate { $0.id == artworkId }
+            )
 
-                if let model = existing {
-                    context.delete(model)
-                    isFavorite = false
-                } else {
-                    let model = artwork.toArtworkModel()
-                    context.insert(model)
-                    isFavorite = true
-                }
+            let existing = try context.fetch(descriptor).first
 
-                try context.save()
-            } catch {
-                print("Error on saving favorites: \(error)")
+            if let model = existing {
+                context.delete(model)
+                isFavorite = false
+            } else {
+                let model = artwork.toArtworkModel()
+                context.insert(model)
+                isFavorite = true
             }
+
+            try context.save()
+        } catch {
+            print("Error on saving favorites: \(error)")
         }
     }
 
     func checkIfFavorited() async {
+        let artworkId = artwork.id
+
         do {
             let descriptor = FetchDescriptor<ArtworkModel>(
-                predicate: #Predicate { $0.id == artwork.id }
+                predicate: #Predicate { $0.id == artworkId }
             )
             let count = try context.fetchCount(descriptor)
             isFavorite = count > 0
@@ -61,4 +63,3 @@ class ArtworkDetailViewModel: ObservableObject {
         }
     }
 }
-

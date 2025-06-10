@@ -50,7 +50,9 @@ struct ArtworkDetailView: View {
             Spacer()
 
             Button(action: {
-                viewModel.toggleFavorite()
+                Task {
+                    await viewModel.toggleFavorite()
+                }
             }) {
                 Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
                     .foregroundColor(viewModel.isFavorite ? .red : .gray)

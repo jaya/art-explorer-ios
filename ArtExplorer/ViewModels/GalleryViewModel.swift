@@ -48,7 +48,10 @@ final class GalleryViewModel: ObservableObject {
                     endpoint: MetMuseumAPI.artworkDetails(objectID: "\(objectID)"),
                     responseType: Artwork.self
                 )
-                artworks.append(artwork)
+
+                if !artwork.primaryImageSmall.isEmpty {
+                    artworks.append(artwork)
+                }
             }
             viewState = .normal(artworks)
         } catch {
