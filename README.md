@@ -1,154 +1,84 @@
-# Art Explorer - Desafio iOS com The Met Museum API
+# 🖼️ ArtExplorer
 
-## 🌟 Objetivo
+ArtExplorer é um aplicativo iOS desenvolvido com SwiftUI que permite explorar obras de arte do [Metropolitan Museum of Art API](https://metmuseum.github.io/). Os usuários podem visualizar detalhes, favoritar obras e alternar entre a lista completa e seus favoritos.
 
-Desenvolver um aplicativo iOS em **Swift** para explorar obras de arte do acervo do Metropolitan Museum of Art (The Met), integrando-se com sua API aberta para:
+## 📦 Funcionalidades
 
-* Listar obras com imagens
-* Visualizar detalhes
-* Marcar como favoritas
+- Listagem de obras com carregamento progressivo (infinite scroll)
+- Visualização detalhada de cada obra
+- Favoritar e desfavoritar obras
+- Alternar entre lista completa e favoritos
+- Mensagens de erro e feedback visual de carregamento
 
----
+## 🧱 Arquitetura
 
-## 🔍 Funcionalidades Principais
+O projeto segue a arquitetura **MVVM-C (Model–View–ViewModel–Coordinator)** com injeção de dependências usando o [Resolver](https://github.com/hmlongco/Resolver).
 
-1. **Listar Obras de Arte com Imagem**
+### Estrutura
 
-   * Exibir 15 obras por vez com imagens
-   * Paginação simulada ao rolar até o final da lista
-
-2. **Favoritar Obras**
-
-   * Marcar e desmarcar obras como favoritas
-   * Exibir favoritos em uma seção separada
-   * Persistência local (CoreData ou UserDefaults)
-
-3. **Detalhes da Obra**
-
-   * Exibir: título, artista, data, técnica, departamento e imagem
-
-4. **Interface Amigável**
-
-   * Design responsivo
-   * Scroll suave e UX clara
-
-5. **Testes Incluídos**
-
-   * Testes unitários (ViewModel, Services)
-   * Testes de interface com XCTest ou XCUITest
-
----
-
-## 📄 Requisitos do Projeto
-
-### 1. Integração com API
-
-* Buscar obras usando: `GET /public/collection/v1/search?hasImages=true&q=painting`
-* Buscar detalhes: `GET /public/collection/v1/objects/{objectID}`
-* Paginação simulada via slicing da lista de `objectIDs`
-
-### 2. Paginação
-
-* Carregamento incremental de 15 em 15 objetos
-* Busca paralela dos detalhes com identificadores retornados
-
-### 3. Favoritos
-
-* Armazenar localmente os objetos favoritados
-* Permitir desmarcar favoritos e navegar para detalhes
-
-### 4. UI/UX
-
-* Scroll infinito (UICollectionView ou SwiftUI List)
-* Indicadores de carregamento e mensagens de erro visuais
-* Suporte a dark mode é um diferencial
-
-### 5. Testes
-
-* ViewModel com mock de serviços
-* Testes de tela para favoritar e navegar
-
-### 6. Documentação
-
-* README contendo:
-
-  * Como rodar o projeto (Xcode, CocoaPods/SPM)
-  * Decisões arquiteturais (MVC, MVVM ou Clean)
-  * Endpoints utilizados
-  * Prints ou vídeos são bem-vindos
-
----
-
-## 🔗 Endpoints Utilizados da API The Met
-
-| Funcionalidade             | Endpoint                                                           |
-| -------------------------- | ------------------------------------------------------------------ |
-| Listar obras com imagem    | `GET /public/collection/v1/search?hasImages=true&q=painting`       |
-| Buscar detalhes da obra    | `GET /public/collection/v1/objects/{objectID}`                     |
-| Listar departamentos       | `GET /public/collection/v1/departments`                            |
-| Buscar por departamento    | `GET /public/collection/v1/search?departmentId=11&q=portrait`      |
-| Buscar por artista/cultura | `GET /public/collection/v1/search?artistOrCulture=true&q=van+gogh` |
-
----
-
-## ⌚ Diagrama de Sequência (Mermaid)
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant UI
-    participant ViewModel
-    participant Repository
-    participant TheMetAPI
-
-    User->>UI: Scroll até o fim da lista
-    UI->>ViewModel: solicitar próxima página de obras
-    ViewModel->>Repository: buscar próximos objectIDs
-    Repository->>TheMetAPI: GET /search?hasImages=true&q=painting
-    TheMetAPI-->>Repository: Retorna lista de objectIDs
-    loop Para cada objectID (15 por página)
-        Repository->>TheMetAPI: GET /objects/{objectID}
-        TheMetAPI-->>Repository: Dados da obra
-    end
-    Repository-->>ViewModel: Lista de obras detalhadas
-    ViewModel-->>UI: Atualiza lista com novas obras
-    User->>UI: Clica em "favoritar"
-    UI->>ViewModel: salvar obra favorita
-    ViewModel->>CoreData: inserir ou remover favorito
+```plaintext
+ArtExplorer
+├── App/                     # App entry point, Coordinator, injeção de dependências
+├── Models/                  # Modelos de dados (ArtObject, etc.)
+├── Services/                # Serviços de rede, cache e favoritos
+│   ├── ArtService.swift         # Responsável por buscar dados da API do Met Museum
+│   ├── FavoritesService.swift   # Gerencia o sistema de favoritos com persistência local
+│   └── Protocols/               # Protocolos usados para facilitar testes e injeção de dependência
+├── ViewModels/              # ViewModels das telas
+├── Views/                   # Telas em SwiftUI agrupadas por contexto
+├── Resources/               # Assets e recursos auxiliares
+├── ArtExplorerTests/        # Testes de unidade
+├── ArtExplorerUITests/      # Testes de interface (UI tests)
 ```
 
----
+## 🧪 Testes
 
-## 📊 Requisitos Desejáveis
+O projeto possui testes automatizados cobrindo ViewModels e interações de interface:
 
-* Logging com `os_log` ou ferramenta equivalente
-* Busca com debounce
-* Filtros por artista, data, cultura
-* Animações com UIKit Dynamics ou SwiftUI
-* Modularização do projeto
-* Deploy com TestFlight ou Demo em vídeo
+### ✅ Testes de Unidade
 
----
+- `ArtListViewModelTests`
+- `ArtDetailViewModelTests`
+- `FavoritesServiceTests`
 
-## 📆 Entrega
+### 📲 Testes de Interface (UI Tests)
 
-1. **Fork do Repositório Base**
-2. **Crie uma branch com seu nome em snake\_case** (ex: `joao_silva_souza`)
-3. **Suba o projeto com commits organizados**
-4. **Abra um Pull Request** com:
+- Teste de listagem inicial
+- Teste de alternância entre favoritos e lista geral
+- Teste de abertura e funcionamento da tela de detalhes
+- Teste da funcionalidade de favoritar e desfavoritar
+- Teste de mensagem de erro e botão de tentativa
 
-   * Título: `Entrega - joao_silva_souza`
-   * Corpo: Nome completo, data da entrega, considerações opcionais
+## ▶️ Execução
 
----
+1. Clone o repositório:
 
-## 🎓 Licença
+```bash
+git clone https://github.com/seu-usuario/ArtExplorer.git
+```
 
-Os dados são fornecidos pela **The Met Museum Open Access API** sob licença [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
+2. Abra o projeto no Xcode:
 
----
+```bash
+open ArtExplorer.xcodeproj
+```
 
-## 📢 Contato
+3. Rode o projeto com `Cmd + R`.
 
-* Autor: Leandro Costa
-* Email: [leandro@jaya.tech](mailto:leandro@jaya.tech)
+## 🧪 Execução dos testes
+
+Para rodar os testes unitários e de UI:
+
+```bash
+Cmd + U
+```
+
+Para ativar mocks de testes, o app usa o argumento `--uitesting` em `launchArguments`.
+
+## 🛠 Tecnologias
+
+- Swift 5.9+
+- SwiftUI
+- Combine
+- Resolver
+- XCTest / XCUITest
