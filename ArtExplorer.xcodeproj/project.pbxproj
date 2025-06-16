@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DF6DF8FA2DFF65BF00D8E639 /* Resolver in Frameworks */ = {isa = PBXBuildFile; productRef = DF6DF8F92DFF65BF00D8E639 /* Resolver */; };
+		DF6DF9002DFF65CD00D8E639 /* Resolver-Static in Frameworks */ = {isa = PBXBuildFile; productRef = DF6DF8FF2DFF65CD00D8E639 /* Resolver-Static */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		DF6DF8B92DFF5FFA00D8E639 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,6 +28,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		DF6DF8FE2DFF65CA00D8E639 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		DF6DF8AB2DFF5FF900D8E639 /* ArtExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArtExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF6DF8B82DFF5FFA00D8E639 /* ArtExplorerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArtExplorerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,9 +48,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		DF6DF8AD2DFF5FF900D8E639 /* ArtExplorer */ = {
+		DF6DF8AD2DFF5FF900D8E639 /* Views */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ArtExplorer;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		DF6DF8BB2DFF5FFA00D8E639 /* ArtExplorerTests */ = {
@@ -45,6 +63,31 @@
 			path = ArtExplorerUITests;
 			sourceTree = "<group>";
 		};
+		DF6DF8D52DFF600900D8E639 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
+			sourceTree = "<group>";
+		};
+		DF6DF8D62DFF601400D8E639 /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		DF6DF8D72DFF602800D8E639 /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		DF6DF8D82DFF603200D8E639 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		DF6DF8D92DFF603600D8E639 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +95,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF6DF9002DFF65CD00D8E639 /* Resolver-Static in Frameworks */,
+				DF6DF8FA2DFF65BF00D8E639 /* Resolver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +120,15 @@
 		DF6DF8A22DFF5FF900D8E639 = {
 			isa = PBXGroup;
 			children = (
-				DF6DF8AD2DFF5FF900D8E639 /* ArtExplorer */,
+				DF6DF8D92DFF603600D8E639 /* ViewModels */,
+				DF6DF8D82DFF603200D8E639 /* Models */,
+				DF6DF8D72DFF602800D8E639 /* Services */,
+				DF6DF8D62DFF601400D8E639 /* Resources */,
+				DF6DF8D52DFF600900D8E639 /* App */,
+				DF6DF8AD2DFF5FF900D8E639 /* Views */,
 				DF6DF8BB2DFF5FFA00D8E639 /* ArtExplorerTests */,
 				DF6DF8C52DFF5FFA00D8E639 /* ArtExplorerUITests */,
+				DF6DF8F82DFF65BF00D8E639 /* Frameworks */,
 				DF6DF8AC2DFF5FF900D8E639 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +143,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		DF6DF8F82DFF65BF00D8E639 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,16 +160,24 @@
 				DF6DF8A72DFF5FF900D8E639 /* Sources */,
 				DF6DF8A82DFF5FF900D8E639 /* Frameworks */,
 				DF6DF8A92DFF5FF900D8E639 /* Resources */,
+				DF6DF8FE2DFF65CA00D8E639 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				DF6DF8AD2DFF5FF900D8E639 /* ArtExplorer */,
+				DF6DF8AD2DFF5FF900D8E639 /* Views */,
+				DF6DF8D52DFF600900D8E639 /* App */,
+				DF6DF8D62DFF601400D8E639 /* Resources */,
+				DF6DF8D72DFF602800D8E639 /* Services */,
+				DF6DF8D82DFF603200D8E639 /* Models */,
+				DF6DF8D92DFF603600D8E639 /* ViewModels */,
 			);
 			name = ArtExplorer;
 			packageProductDependencies = (
+				DF6DF8F92DFF65BF00D8E639 /* Resolver */,
+				DF6DF8FF2DFF65CD00D8E639 /* Resolver-Static */,
 			);
 			productName = ArtExplorer;
 			productReference = DF6DF8AB2DFF5FF900D8E639 /* ArtExplorer.app */;
@@ -195,6 +261,9 @@
 			);
 			mainGroup = DF6DF8A22DFF5FF900D8E639;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DF6DF8F32DFF630100D8E639 /* XCRemoteSwiftPackageReference "Resolver" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DF6DF8AC2DFF5FF900D8E639 /* Products */;
 			projectDirPath = "";
@@ -550,6 +619,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DF6DF8F32DFF630100D8E639 /* XCRemoteSwiftPackageReference "Resolver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Resolver";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DF6DF8F92DFF65BF00D8E639 /* Resolver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF6DF8F32DFF630100D8E639 /* XCRemoteSwiftPackageReference "Resolver" */;
+			productName = Resolver;
+		};
+		DF6DF8FF2DFF65CD00D8E639 /* Resolver-Static */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF6DF8F32DFF630100D8E639 /* XCRemoteSwiftPackageReference "Resolver" */;
+			productName = "Resolver-Static";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DF6DF8A32DFF5FF900D8E639 /* Project object */;
 }

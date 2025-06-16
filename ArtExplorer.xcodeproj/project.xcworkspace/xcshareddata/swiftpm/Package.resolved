@@ -1,0 +1,15 @@
+{
+  "originHash" : "75832de695473b491b0ec69a2bd6b39f6d00fe301d2c985565ad3b94b2d65d97",
+  "pins" : [
+    {
+      "identity" : "resolver",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Resolver",
+      "state" : {
+        "revision" : "47602af1ac8d7952299fbd0bda3cfbd12cf3a8ca",
+        "version" : "1.5.1"
+      }
+    }
+  ],
+  "version" : 3
+}

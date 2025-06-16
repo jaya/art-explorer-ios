@@ -9,33 +9,75 @@ import XCTest
 
 final class ArtExplorerUITests: XCTestCase {
 
+    var app: XCUIApplication!
+
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        app = XCUIApplication()
+        app.launchArguments.append("--uitesting")
+        app.launch()
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    func testToggleFavoritesAndBack() throws {
+        let navigationTitle = app.navigationBars.firstMatch
+        let toggleButton = app.buttons.element(matching: .button, identifier: "Ver Favoritos")
 
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+        XCTAssertTrue(navigationTitle.waitForExistence(timeout: 5))
+        XCTAssertTrue(navigationTitle.staticTexts["Art Explorer"].exists)
+
+        let firstCell = app.scrollViews.children(matching: .other).element(boundBy: 0)
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
+
+        toggleButton.tap()
+
+        XCTAssertTrue(navigationTitle.staticTexts["Favoritos"].waitForExistence(timeout: 5))
+
+        app.buttons["Ver Tudo"].tap()
+        XCTAssertTrue(navigationTitle.staticTexts["Art Explorer"].waitForExistence(timeout: 5))
+    }
+    
+    func testShowsErrorOnInitialLoadFailure() throws {
+        let errorApp = XCUIApplication()
+        errorApp.launchArguments = ["--uitesting-error"]
+        errorApp.launch()
+
+        let errorText = errorApp.staticTexts["Erro ao carregar obras: Erro simulado"]
+        let retryButton = errorApp.buttons["Tentar novamente"]
+
+        XCTAssertTrue(errorText.waitForExistence(timeout: 3), "Mensagem de erro não apareceu na tela")
+        XCTAssertTrue(retryButton.exists, "Botão de tentar novamente não apareceu")
+    }
+    
+    func testToggleFavoriteInsideDetail() throws {
         let app = XCUIApplication()
+        app.launchArguments.append("--uitesting")
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+        let scroll = app.scrollViews.firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 5))
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+        let firstCell = scroll.otherElements.children(matching: .other).element(boundBy: 0)
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "Primeira célula não apareceu a tempo")
+
+        while !firstCell.isHittable {
+            scroll.swipeUp()
+            sleep(1)
         }
+
+        firstCell.tap()
+
+        let title = app.staticTexts["detailTitle"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5), "Título da obra não apareceu")
+
+        let favoriteButton = app.buttons["favoriteButton"]
+        XCTAssertTrue(favoriteButton.waitForExistence(timeout: 5))
+
+        XCTAssertTrue(favoriteButton.label.contains("Adicionar"))
+        favoriteButton.tap()
+        XCTAssertTrue(favoriteButton.label.contains("Remover"))
+        favoriteButton.tap()
+        XCTAssertTrue(favoriteButton.label.contains("Adicionar"))
+
+        app.swipeDown()
     }
 }
