@@ -4,6 +4,7 @@
 //
 //  Created by Pedro Freddi on 16/06/25.
 //
+// swiftlint:disable all
 
 import XCTest
 
