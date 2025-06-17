@@ -2,6 +2,8 @@
 
 ArtExplorer é um aplicativo iOS desenvolvido com SwiftUI que permite explorar obras de arte do [Metropolitan Museum of Art API](https://metmuseum.github.io/). Os usuários podem visualizar detalhes, favoritar obras e alternar entre a lista completa e seus favoritos.
 
+👉 **Acesse via TestFlight:** [https://testflight.apple.com/join/zPx5kRh2](https://testflight.apple.com/join/zPx5kRh2)
+
 ## 📦 Funcionalidades
 
 - Listagem de obras com carregamento progressivo (infinite scroll)
@@ -9,6 +11,15 @@ ArtExplorer é um aplicativo iOS desenvolvido com SwiftUI que permite explorar o
 - Favoritar e desfavoritar obras
 - Alternar entre lista completa e favoritos
 - Mensagens de erro e feedback visual de carregamento
+
+## 🌐 Endpoints Utilizados
+
+Os dados são consumidos da [Met Museum Collection API](https://metmuseum.github.io/):
+
+| Tipo | Endpoint | Descrição |
+|------|----------|-----------|
+| GET  | `/search?hasImages=true&q=painting` | Retorna lista de IDs de obras com imagens relacionadas à pintura |
+| GET  | `/objects/{id}` | Retorna os detalhes de uma obra específica |
 
 ## 🧱 Arquitetura
 
