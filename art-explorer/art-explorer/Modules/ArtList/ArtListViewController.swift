@@ -5,16 +5,14 @@
 //  Created by Pedro Freddi on 18/06/25.
 //
 
-// protocol ArtListViewControllerDelegate: AnyObject {
-//
-// }
 import Foundation
 import UIKit
 import Kingfisher
+import Combine
 
 class ArtListViewController: BaseViewController {
 
-    var viewModel: ArtListViewModelDelegate!
+    var viewModel: ArtListViewModel!
 
     var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -22,12 +20,24 @@ class ArtListViewController: BaseViewController {
         var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(ArtItemCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(EmptyListCollectionViewCell.self, forCellWithReuseIdentifier: "emptyCell")
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "defaultCell")
         return collectionView
     }()
 
-    init(viewModel: ArtListViewModelDelegate) {
+    var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        return activityIndicator
+    }()
+
+    let searchController = UISearchController(searchResultsController: nil)
+
+    init(viewModel: ArtListViewModel) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
+        tabBarItem = UITabBarItem(title: "Art", image: UIImage(systemName: "photo.artframe"), tag: 0)
     }
 
     @MainActor required init?(coder: NSCoder) {
@@ -39,37 +49,61 @@ class ArtListViewController: BaseViewController {
         setupViews()
         viewModel.getNextPage()
         title = "Art Explorer"
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = false
-    }
-
     internal override func setupCancelables() {
-        self.viewModel.repository.$artObjects
+        self.viewModel.$artObjects
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] objects in
+                print("OBJ: ", objects)
                 self?.collectionView.reloadData()
             }.store(in: &cancellables)
+
+        self.viewModel.$isFirstLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFirstLoading in
+                self?.toggleFirstLoading(isFirstLoading)
+            }
+            .store(in: &cancellables)
+
+        self.viewModel.$error
+            .compactMap { $0 }
+            .sink { [weak self] error in
+                self?.showAlert(title: "Error", message: error.localizedDescription)
+                self?.viewModel.clearError()
+            }
+            .store(in: &cancellables)
     }
 
     private func setupViews() {
         view.addSubview(collectionView)
+        view.addSubview(activityIndicator)
         collectionView.dataSource = self
         collectionView.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
 
         NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+
+    private func toggleFirstLoading(_ isFirstLoading: Bool) {
+        if isFirstLoading {
+            self.activityIndicator.startAnimating()
+        } else {
+            self.activityIndicator.stopAnimating()
+        }
+        self.searchController.searchBar.isHidden = isFirstLoading
+        self.activityIndicator.isHidden = !isFirstLoading
+        self.collectionView.isHidden = isFirstLoading
     }
 }
 
@@ -79,13 +113,20 @@ extension ArtListViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ArtItemCollectionViewCell
-        cell.setupCell(self.viewModel.artObjects[indexPath.row])
-        return cell
+        let item: ArtListItem = self.viewModel.artObjects[indexPath.row]
+        switch item {
+        case .artObject(let artObject):
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ArtItemCollectionViewCell
+            cell.setupCell(artObject)
+            return cell
+        case .empty:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "emptyCell", for: indexPath)
+            return cell
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.openArtDetail(for: indexPath.row)
+        viewModel.openArtDetail(indexPath.row)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -101,7 +142,14 @@ extension ArtListViewController: UICollectionViewDataSource {
 
 extension ArtListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 250)
+
+        let item: ArtListItem = self.viewModel.artObjects[indexPath.row]
+        switch item {
+        case .artObject:
+            return CGSize(width: collectionView.bounds.width, height: 250)
+        case .empty:
+            return CGSize(width: collectionView.bounds.width, height: 50)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -109,78 +157,9 @@ extension ArtListViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-class ArtItemCollectionViewCell: UICollectionViewCell {
-
-    var cardView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 16
-        view.layer.shadowColor = UIColor.gray.cgColor
-        view.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        view.layer.shadowRadius = 6
-        view.layer.shadowOpacity = 0.6
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    var preview: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            imageView.heightAnchor.constraint(equalToConstant: 150)
-        ])
-        imageView.backgroundColor = .secondarySystemBackground
-        imageView.kf.indicatorType = .activity
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-
-    var nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
-    func setupCell(_ artObject: ArtObject) {
-        nameLabel.text = artObject.title
-        if let url = URL(string: artObject.primaryImageSmall) {
-            preview.kf.setImage(with: url)
-        }
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        contentView.addSubview(cardView)
-        cardView.addSubview(preview)
-        cardView.addSubview(nameLabel)
-
-        NSLayoutConstraint.activate([
-            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
-            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
-            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            preview.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
-            preview.centerXAnchor.constraint(equalTo: cardView.centerXAnchor),
-            preview.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
-            preview.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
-            nameLabel.topAnchor.constraint(equalTo: preview.bottomAnchor, constant: 8),
-            nameLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 16),
-            nameLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -16),
-            nameLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16)
-        ])
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        preview.kf.cancelDownloadTask()
-        preview.image = nil
+extension ArtListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let query = searchController.searchBar.text ?? ""
+        viewModel.updateSearchResults(query)
     }
 }

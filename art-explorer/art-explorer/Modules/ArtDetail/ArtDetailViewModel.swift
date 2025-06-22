@@ -9,10 +9,6 @@ import UIKit
 import OSLog
 import Combine
 
-protocol NavigableViewModel {
-    var navigationController: UINavigationController? { get }
-}
-
 protocol ArtDetailViewModelDelegate: AnyObject {
     var artId: Int { get }
     var isFavorite: Bool { get }
@@ -20,7 +16,7 @@ protocol ArtDetailViewModelDelegate: AnyObject {
     func didTapFavoriteButton()
 }
 
-class ArtDetailViewModel: ArtDetailViewModelDelegate, NavigableViewModel {
+class ArtDetailViewModel: ArtDetailViewModelDelegate {
     var navigationController: UINavigationController?
     var artId: Int
     var repository: ArtRepository
@@ -38,9 +34,7 @@ class ArtDetailViewModel: ArtDetailViewModelDelegate, NavigableViewModel {
     }
 
     deinit {
-        #if DEBUG
         Logger.viewCycle.info("\(type(of: self)) deallocated")
-        #endif
     }
 
     func setupCancelables() {
@@ -53,7 +47,7 @@ class ArtDetailViewModel: ArtDetailViewModelDelegate, NavigableViewModel {
             .assign(to: \.artObject, on: self)
             .store(in: &cancelables)
 
-        repository.$favoriteArts
+        repository.$favoriteIds
             .map { [weak self] in
                 guard let self else { return false }
                 return $0.contains(self.artId)

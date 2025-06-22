@@ -11,12 +11,12 @@ import UIKit
 import CoreData
 
 protocol ArtObjectRepository {
-    var pages: [[Int]] { get }
-    var currentPage: Int { get set }
-    var artObjects: [ArtObject] { get set }
-    func fetchArtObjects() async
+//    var pages: [[Int]] { get }
+//    var currentPage: Int { get set }
+//    var artObjects: [ArtObject] { get set }
+    func fetchArtObjects() async throws
     func fetchArtIds() async throws
-    func getArtDetailsById(_ id: Int) async throws -> ArtObject
+    func fetchArtDetails(_ id: Int) async throws -> ArtObject
     func fetchDepartments() async throws
 }
 
@@ -28,42 +28,55 @@ extension Array {
     }
 }
 
+enum ArtObjectRepositoryError: LocalizedError {
+    case fetchError
+
+    var errorDescription: String? {
+        switch self {
+        case .fetchError:
+            return "Something went wrong while connecting to the server. Try again later."
+        }
+    }
+}
+
 final class ArtRepository: ArtObjectRepository {
-    internal var currentPage: Int = -1
     @Published var pages: [[Int]] = []
     @Published var artObjects: [ArtObject] = []
-    @Published var favoriteArts: Set<Int> = []
+    @Published var favoriteIds: Set<Int> = []
+    @Published var favorites: [ArtObject] = []
+    @Published var artIds: [Int] = []
     @Published var departments: [Department] = []
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    let request: NSFetchRequest<FavoriteArt> = FavoriteArt.fetchRequest()
+    internal var currentPage: Int = -1
+    internal let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    internal let request: NSFetchRequest<FavoriteArt> = FavoriteArt.fetchRequest()
 
     init() {
         do {
             let favorites = try context.fetch(request)
-            favoriteArts = Set(favorites.map { Int($0.id) })
-            print("Favs: ", favoriteArts)
+            favoriteIds = Set(favorites.map { Int($0.id) })
         } catch {
-            print("Error")
+            Logger.database.error("Error loading favorites: \(error)")
         }
     }
 
-    func fetchArtObjects() async {
-        if pages.isEmpty {
-            try! await fetchArtIds()
-        }
-        currentPage += 1
-        if currentPage < pages.count {
-            let pageItems = pages[currentPage]
-            var arts = [ArtObject]()
-            for pageItem in pageItems {
-                let artObject = try? await getArtDetailsById(pageItem)
-                if let artObject = artObject {
+    func fetchArtObjects() async throws {
+        do {
+            if pages.isEmpty {
+                try await fetchArtIds()
+            }
+            currentPage += 1
+            if currentPage < pages.count {
+                let pageItems = pages[currentPage]
+                var arts = [ArtObject]()
+                for pageItem in pageItems {
+                    let artObject = try await fetchArtDetails(pageItem)
                     arts.append(artObject)
                 }
+                artObjects += arts
             }
-            artObjects += arts
+        } catch {
+            throw ArtObjectRepositoryError.fetchError
         }
-//        artObjects += ArtObject.fixtures
     }
 
     func fetchArtIds() async throws {
@@ -71,20 +84,40 @@ final class ArtRepository: ArtObjectRepository {
         pages = data.objectIDs.chunked(into: 15)
     }
 
-    func getArtDetailsById(_ id: Int) async throws -> ArtObject {
-        return try await GetArtDetailsByIdRequest(id).request()
+    func fetchArtDetails(_ id: Int) async throws -> ArtObject {
+        do {
+            return try await GetArtDetailsByIdRequest(id).request()
+        } catch {
+            throw ArtObjectRepositoryError.fetchError
+        }
     }
 
     func fetchDepartments() async throws {
-        departments = try await GetDepartmentsRequest().request().departments
     }
 
     func getArtById(_ id: Int) -> ArtObject? {
         return artObjects.first { $0.objectID == id }
     }
 
+    func getFavorites() async {
+        var favorites: [ArtObject] = []
+        for artId in favoriteIds {
+            if let artObject = getArtById(artId) {
+                favorites.append(artObject)
+            } else {
+                do {
+                    let art = try await fetchArtDetails(artId)
+                    favorites.append(art)
+                } catch {
+                    // TBD
+                }
+            }
+        }
+        self.favorites = favorites
+    }
+
     func isArtFavorite(_ id: Int) -> Bool {
-        return favoriteArts.contains(id)
+        return favoriteIds.contains(id)
     }
 
     func addFavorite(artId: Int) {
@@ -93,7 +126,10 @@ final class ArtRepository: ArtObjectRepository {
         do {
             try context.save()
             Logger.database.info("Succesfully added new favorite: \(artId)")
-            favoriteArts.insert(artId)
+            favoriteIds.insert(artId)
+            if let art = getArtById(artId) {
+                favorites.append(art)
+            }
         } catch {
             Logger.database.error("Error adding new favorite: \(error.localizedDescription)")
         }
@@ -107,7 +143,10 @@ final class ArtRepository: ArtObjectRepository {
                 self.context.delete(favoriteToDelete)
                 try context.save()
                 Logger.database.info("Succesfully removed favorite: \(artId)")
-                favoriteArts.remove(artId)
+                favoriteIds.remove(artId)
+                if let favoriteIndex = favorites.firstIndex(where: { $0.objectID == artId }) {
+                    favorites.remove(at: favoriteIndex)
+                }
             }
         } catch {
             Logger.database.error("Error removing favorite: \(error.localizedDescription)")

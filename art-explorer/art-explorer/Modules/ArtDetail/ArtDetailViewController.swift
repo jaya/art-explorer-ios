@@ -53,6 +53,7 @@ class ArtDetailViewController: BaseViewController {
         view.backgroundColor = .systemBackground
         setupFavoriteButton()
         setupUI()
+        setupCancelables()
     }
 
     internal override func setupCancelables() {

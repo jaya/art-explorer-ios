@@ -18,11 +18,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         window?.backgroundColor = .systemBackground
-        let navController = UINavigationController()
         // TODO: Change root view controller
-        let viewController = ArtListViewController(viewModel: ArtListViewModel(repository: ArtRepository(), navigationController: navController))
-        navController.setViewControllers([viewController], animated: false)
-        window?.rootViewController = navController
+        let artsNavController = UINavigationController()
+        let repo = ArtRepository()
+        let viewController = ArtListViewController(viewModel: ArtListViewModel(repository:repo, navigationController: artsNavController))
+        var favoritesNavController = UINavigationController()
+        artsNavController.viewControllers = [viewController]
+        let favoritesViewController = FavoritesListViewController(viewModel: FavoritesListViewModel(repository: repo, navigationController: favoritesNavController))
+        favoritesNavController.viewControllers = [favoritesViewController]
+
+        let tvc = UITabBarController()
+        tvc.viewControllers = [artsNavController, favoritesNavController]
+
+        window?.rootViewController = tvc
         window?.makeKeyAndVisible()
     }
 
