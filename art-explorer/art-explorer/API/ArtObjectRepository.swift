@@ -11,13 +11,12 @@ import UIKit
 import CoreData
 
 protocol ArtObjectRepository {
-//    var pages: [[Int]] { get }
-//    var currentPage: Int { get set }
-//    var artObjects: [ArtObject] { get set }
+    var pages: [[Int]] { get }
+    var currentPage: Int { get set }
+    var artObjects: [ArtObject] { get set }
     func fetchArtObjects() async throws
     func fetchArtIds() async throws
     func fetchArtDetails(_ id: Int) async throws -> ArtObject
-    func fetchDepartments() async throws
 }
 
 extension Array {
@@ -45,7 +44,6 @@ final class ArtRepository: ArtObjectRepository {
     @Published var favoriteIds: Set<Int> = []
     @Published var favorites: [ArtObject] = []
     @Published var artIds: [Int] = []
-    @Published var departments: [Department] = []
     internal var currentPage: Int = -1
     internal let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     internal let request: NSFetchRequest<FavoriteArt> = FavoriteArt.fetchRequest()

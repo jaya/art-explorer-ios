@@ -34,8 +34,8 @@ Desenvolver um aplicativo iOS em **Swift** para explorar obras de arte do acervo
 
 5. **Testes Incluídos**
 
-   * Testes unitários (ViewModel, Services)
-   * Testes de interface com XCTest ou XCUITest
+   * Testes unitários (ViewModel, Services) - Não entregue
+   * Testes de interface com XCTest ou XCUITest - Não entregue
 
 ---
 
@@ -69,14 +69,14 @@ Desenvolver um aplicativo iOS em **Swift** para explorar obras de arte do acervo
 * Testes de tela para favoritar e navegar
 
 ### 6. Documentação
-
-* README contendo:
-
-  * Como rodar o projeto (Xcode, CocoaPods/SPM)
-  * Decisões arquiteturais (MVC, MVVM ou Clean)
+  * Como rodar o projeto:
+   O projeto foi feito utilizando Xcode 16.2 e SPM.
+  * Decisões arquiteturais
+  O app foi feito utilizando MVVM + @Published property wrappers para compartilhar atualizações entre as classes
   * Endpoints utilizados
-  * Prints ou vídeos são bem-vindos
-
+  `GET /public/collection/v1/search?hasImages=true&q=painting`
+  `GET /public/collection/v1/objects/{objectID}`
+  Apresentação do projeto: https://drive.google.com/file/d/1JJJY1wcbG29QzxFqMkvZjWD2mXcgtuHY/view?usp=drive_link
 ---
 
 ## 🔗 Endpoints Utilizados da API The Met
